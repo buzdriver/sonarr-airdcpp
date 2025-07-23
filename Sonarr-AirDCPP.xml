@@ -10,6 +10,7 @@
   <Project>https://hub.docker.com/repository/docker/buzdriver/sonarr-airdcpp</Project>
   <Overview>Sonarr with AirDC++ index- and downloader</Overview>
   <Category>Media</Category>
+  <WebUI>http://[IP]:[PORT:8989]</WebUI>
 
   <!-- Ports -->
   <Config Name="WEBUI_PORT" Target="8989" Default="8989" Description="WebUI Port" Type="Port" Display="always" />
