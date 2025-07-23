@@ -1,0 +1,41 @@
+FROM ghcr.io/linuxserver/baseimage-ubuntu:focal
+
+ARG DEBIAN_FRONTEND="noninteractive"
+ARG SONARR_BRANCH="phantom-develop"
+ENV XDG_CONFIG_HOME="/config/xdg"
+
+RUN echo "**** install dependencies ****" && \
+    apt-get update && apt-get install --no-install-recommends -y \
+        jq \
+        libicu66 \
+        libmediainfo0v5 \
+        sqlite3 \
+        curl \
+        unzip \
+        ca-certificates \
+        gnupg \
+        libunwind8 \
+        libssl1.1 \
+        mono-complete \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN echo "**** install sonarr ****" && \
+    mkdir -p /app/sonarr/bin && \
+    curl -o /tmp/sonarr.zip -L \
+        "https://github.com/nls44/Sonarr-AirDCPP/releases/download/airdcpp-v1/linux.zip" && \
+    unzip /tmp/sonarr.zip -d /app/sonarr/bin && \
+    rm -rf /tmp/* && \
+    echo "**** cleanup ****" && \
+    rm -rf /app/sonarr/bin/Sonarr.Update \
+        /tmp/* \
+        /var/lib/apt/lists/* \
+        /var/tmp/*
+
+RUN mkdir -p /etc/services.d/sonarr && \
+printf '#!/bin/sh\nexec mono /app/sonarr/bin/Sonarr.exe --nobrowser --data=/config\n' > /etc/services.d/sonarr/run && \
+chmod +x /etc/services.d/sonarr/run
+
+COPY root/ /
+
+EXPOSE 8989
+VOLUME /config
